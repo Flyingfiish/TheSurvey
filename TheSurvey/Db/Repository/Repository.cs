@@ -1,0 +1,74 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheSurvey.Db.Repository.Specifications;
+
+namespace TheSurvey.Db.Repository
+{
+    public class Repository<T> : IRepository<T> where T : class, new()
+    {
+        protected ApplicationContext _context;
+        protected DbSet<T> _entities;
+
+        public Repository(ApplicationContext context)
+        {
+            _context = context;
+            _entities = _context.Set<T>();
+        }
+
+        public async Task Create(T item)
+        {
+            _entities.Add(item);
+            await _context.SaveChangesAsync();
+            _context.Entry(item).State = EntityState.Detached;
+        }
+
+        public async virtual Task Delete(Specification<T> spec)
+        {
+            List<T> entity = await _entities.Where(spec.ToExpression()).ToListAsync();
+            _entities.RemoveRange(entity);
+            await _context.SaveChangesAsync();
+            _context.Entry(entity).State = EntityState.Detached;
+        }
+
+        public void Dispose()
+        {
+            _context.DisposeAsync();
+        }
+
+        public async virtual Task<T> ReadOne(Specification<T> spec)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (spec.Includes != null)
+            {
+                query = spec.Includes(query);
+            }
+
+            return await query
+                .AsNoTracking()
+                .FirstOrDefaultAsync(spec.ToExpression());
+        }
+
+        public async Task<List<T>> ReadMany(Specification<T> spec)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (spec.Includes != null)
+            {
+                query = spec.Includes(query);
+            }
+            return await query
+                .AsNoTracking()
+                .Where(spec.ToExpression()).ToListAsync();
+        }
+
+        public async Task Update(Specification<T> spec, Action<T> func)
+        {
+            T entity = await _entities.FirstOrDefaultAsync(spec.ToExpression());
+            func(entity);
+            await _context.SaveChangesAsync();
+            _context.Entry(entity).State = EntityState.Detached;
+        }
+    }
+}
