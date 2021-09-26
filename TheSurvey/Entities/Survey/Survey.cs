@@ -12,5 +12,6 @@ namespace TheSurvey.Entities
         public User User { get; set; }
         public string Name { get; set; }
         public bool IsArchieve { get; set; }
+        public List<Question> Questions { get; set; }
     }
 }

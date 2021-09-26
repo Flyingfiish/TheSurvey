@@ -91,6 +91,29 @@ namespace TheSurvey.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> GetAnswers()
+        {
+            try
+            {
+                var id = User.Claims.Where(c => c.Type == "Id").Select(c => c.Value).SingleOrDefault();
+                if (String.IsNullOrEmpty(id))
+                {
+                    return Unauthorized();
+                }
+
+                var ids = new { Ids = new List<Guid>() };
+                var result = await _surveysService.Get(new GetSurveysByIdsSpec(ids.Ids));
+                return Ok(result);
+            }
+            catch (Exception err)
+            {
+                return BadRequest(err.Message);
+            }
+        }
+
+        [Authorize]
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> Update(Guid surveyId)
@@ -102,10 +125,10 @@ namespace TheSurvey.Controllers
                 {
                     return Unauthorized();
                 }
-                var updateDefinition = new 
-                { 
-                    Name = "", 
-                    IsArchieve = false 
+                var updateDefinition = new
+                {
+                    Name = "",
+                    IsArchieve = false
                 };
                 using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
                 {

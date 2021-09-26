@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheSurvey.Db.Repository.Specifications.Questions;
 using TheSurvey.Entities;
 using TheSurvey.Services.Questions;
 using TheSurvey.Services.Surveys;
@@ -45,9 +46,32 @@ namespace TheSurvey.Controllers
                     await _questionsService.Create(question);
                 }
 
-                
+
 
                 return Ok();
+            }
+            catch (Exception err)
+            {
+                return BadRequest(err.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> Get(Guid questionId)
+        {
+            try
+            {
+                var id = User.Claims.Where(c => c.Type == "Id").Select(c => c.Value).SingleOrDefault();
+                if (String.IsNullOrEmpty(id))
+                {
+                    return Unauthorized();
+                }
+
+                IEnumerable<Question> question = await _questionsService.Get(new GetQuestionByIdIncludeAnswerSpec(questionId));
+
+                return Ok(question.FirstOrDefault());
             }
             catch (Exception err)
             {

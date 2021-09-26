@@ -27,9 +27,9 @@ namespace TheSurvey.Services.Answers
             throw new NotImplementedException();
         }
 
-        public Task<List<Answer>> Get(Specification<Answer> spec)
+        public async Task<List<Answer>> Get(Specification<Answer> spec)
         {
-            throw new NotImplementedException();
+            return await _answersRepository.ReadMany(spec);
         }
 
         public Task Update(Specification<Answer> spec, Action<Answer> func)

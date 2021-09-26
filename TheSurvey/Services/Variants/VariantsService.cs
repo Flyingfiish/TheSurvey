@@ -26,9 +26,9 @@ namespace TheSurvey.Services.Variants
             throw new NotImplementedException();
         }
 
-        public Task<List<Variant>> Get(Specification<Variant> spec)
+        public async Task<List<Variant>> Get(Specification<Variant> spec)
         {
-            throw new NotImplementedException();
+            return await _variantsRepository.ReadMany(spec);
         }
 
         public Task Update(Specification<Variant> spec, Action<Variant> func)
