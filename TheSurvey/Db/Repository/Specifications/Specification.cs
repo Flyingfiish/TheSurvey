@@ -13,7 +13,7 @@ namespace TheSurvey.Db.Repository.Specifications
 
         private Func<T, bool> Function => _function ??= Predicate.Compile();
 
-        protected Expression<Func<T, bool>> Predicate;
+        public Expression<Func<T, bool>> Predicate;
 
         public Func<IQueryable<T>, IIncludableQueryable<T, object>> Includes { get; set; }
 

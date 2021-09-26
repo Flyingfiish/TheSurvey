@@ -18,8 +18,8 @@ namespace TheSurvey.Db
         public ApplicationContext()
         {
             //Database.EnsureDeleted();
-            //Database.EnsureCreated();
-            Database.Migrate();
+            Database.EnsureCreated();
+            //Database.Migrate();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,7 +30,18 @@ namespace TheSurvey.Db
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            modelBuilder
+                .Entity<Survey>()
+                .HasMany(s => s.Questions)
+                .WithOne(q => q.Survey);
+            modelBuilder
+                .Entity<Question>()
+                .HasMany(q => q.Variants)
+                .WithOne(v => v.Question);
+            modelBuilder
+                .Entity<Variant>()
+                .HasMany(v => v.Answers)
+                .WithOne(a => a.Variant);
         }
     }
 }

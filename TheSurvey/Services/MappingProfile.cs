@@ -14,6 +14,11 @@ namespace TheSurvey.Services
             CreateMap<User, UserDto>();
             CreateMap<User, UserRegisterDto>();
             CreateMap<UserRegisterDto, User>();
+
+            CreateMap<Survey, SurveyDto>();
+            CreateMap<Question, QuestionDto>();
+            CreateMap<Variant, VariantDto>();
+            CreateMap<Answer, AnswerDto>();
             //CreateMap<RegisterRequest, User>()
             //    .ForMember(u => u.HashPassword, opt => opt.MapFrom(r => PasswordHasher.GetHash(r.Password)));
         }

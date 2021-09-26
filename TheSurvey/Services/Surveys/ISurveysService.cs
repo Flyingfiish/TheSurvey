@@ -11,7 +11,7 @@ namespace TheSurvey.Services.Surveys
     {
         public Task Create(Survey survey);
 
-        public Task<List<Survey>> Get(Specification<Survey> spec);
+        public Task<List<SurveyDto>> Get(Specification<Survey> spec);
 
         public Task Update(Specification<Survey> spec, Action<Survey> func);
 

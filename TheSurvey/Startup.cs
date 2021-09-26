@@ -21,6 +21,9 @@ using TheSurvey.Services.Users;
 using TheSurvey.Services;
 using TheSurvey.Services.Questions;
 using TheSurvey.Services.Surveys;
+using TheSurvey.Services.Variants;
+using TheSurvey.Services.Answers;
+using System.Threading;
 
 namespace TheSurvey
 {
@@ -46,12 +49,18 @@ namespace TheSurvey
             services.AddDbContext<ApplicationContext>();
 
             services.AddTransient<UsersService>();
-            services.AddTransient<IQuestionsService, QuestionsService>();
             services.AddTransient<ISurveysService, SurveysService>();
+            services.AddTransient<IQuestionsService, QuestionsService>();
+            services.AddTransient<IVariantsService, VariantsService>();
+            services.AddTransient<IAnswersService, AnswersService>();
 
             services.AddScoped<IRepository<User>, Repository<User>>();
-            services.AddScoped<IRepository<Question>, Repository<Question>>();
             services.AddScoped<IRepository<Survey>, Repository<Survey>>();
+            services.AddScoped<IRepository<Question>, Repository<Question>>();
+            services.AddScoped<IRepository<Variant>, Repository<Variant>>();
+            services.AddScoped<IRepository<Answer>, Repository<Answer>>();
+
+            services.AddScoped<TestSurveyService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(opt =>
@@ -72,6 +81,8 @@ namespace TheSurvey
                     };
                 }
                 );
+
+            
 
             services.AddControllers();
 

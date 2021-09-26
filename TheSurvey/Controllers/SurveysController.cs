@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TheSurvey.Db.Repository.Specifications;
 using TheSurvey.Db.Repository.Specifications.Surveys;
 using TheSurvey.Entities;
+using TheSurvey.Services;
 using TheSurvey.Services.Surveys;
 
 namespace TheSurvey.Controllers
@@ -19,10 +20,27 @@ namespace TheSurvey.Controllers
     public class SurveysController : ControllerBase
     {
         private readonly ISurveysService _surveysService;
+        private readonly TestSurveyService _testSurveyService;
 
-        public SurveysController(ISurveysService surveysService)
+        public SurveysController(ISurveysService surveysService, TestSurveyService testSurveyService)
         {
             _surveysService = surveysService;
+            _testSurveyService = testSurveyService;
+        }
+
+        [HttpPut]
+        [Route("[action]")]
+        public async Task<IActionResult> CreateTest()
+        {
+            try
+            {
+                await _testSurveyService.Create();
+                return Ok();
+            }
+            catch (Exception err)
+            {
+                return BadRequest(err.Message);
+            }
         }
 
         [Authorize]
@@ -73,7 +91,7 @@ namespace TheSurvey.Controllers
                     json = await reader.ReadToEndAsync();
                     ids = JsonConvert.DeserializeAnonymousType(json, ids);
                 }
-                List<Survey> result;
+                List<SurveyDto> result;
                 if (!string.IsNullOrEmpty(json))
                 {
                     result = await _surveysService.Get(new GetSurveysByIdsSpec(ids.Ids));
@@ -93,7 +111,7 @@ namespace TheSurvey.Controllers
         [Authorize]
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> GetAnswers()
+        public async Task<IActionResult> GetAnswers(Guid surveyId)
         {
             try
             {
@@ -104,8 +122,8 @@ namespace TheSurvey.Controllers
                 }
 
                 var ids = new { Ids = new List<Guid>() };
-                var result = await _surveysService.Get(new GetSurveysByIdsSpec(ids.Ids));
-                return Ok(result);
+                var result = await _surveysService.Get(new GetSurveyIncludesAnswersSpec(surveyId));
+                return Ok(result.FirstOrDefault());
             }
             catch (Exception err)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +12,12 @@ namespace TheSurvey.Services.Surveys
     public class SurveysService : ISurveysService
     {
         private readonly IRepository<Survey> _surveysRepository;
+        private readonly IMapper _mapper;
 
-        public SurveysService(IRepository<Survey> surveysRepository)
+        public SurveysService(IRepository<Survey> surveysRepository, IMapper mapper)
         {
             _surveysRepository = surveysRepository;
+            _mapper = mapper;
         }
 
         public async Task Create(Survey survey)
@@ -29,9 +32,10 @@ namespace TheSurvey.Services.Surveys
             await _surveysRepository.Delete(spec);
         }
 
-        public async Task<List<Survey>> Get(Specification<Survey> spec)
+        public async Task<List<SurveyDto>> Get(Specification<Survey> spec)
         {
-            return await _surveysRepository.ReadMany(spec);
+            var surveys = await _surveysRepository.ReadMany(spec);
+            return _mapper.Map<List<SurveyDto>>(surveys);
         }
 
         public async Task Update(Specification<Survey> spec, Action<Survey> func)
