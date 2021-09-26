@@ -26,7 +26,7 @@ namespace TheSurvey.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("[action]")]
         public async Task<IActionResult> Create()
         {

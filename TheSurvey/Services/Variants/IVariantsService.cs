@@ -7,7 +7,7 @@ using TheSurvey.Entities;
 
 namespace TheSurvey.Services.Variants
 {
-    interface IVariantsService
+    public interface IVariantsService
     {
         public Task Create(Variant survey);
 
